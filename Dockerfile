@@ -5,12 +5,13 @@ FROM node:alpine
 WORKDIR /usr/src/app
 
 # Fazendo uma copia do package.json para dentro do container
-COPY package.json ./
+COPY package.json yarn.lock ./
 
 # Com o package.json ja dentro do nosso container agora vamos
 # rodar as instalações com o node
-RUN npm install -g next
-RUN npm install -y
+RUN yarn
+RUN yarn add mongodb swr
+RUN yarn add @types/mongodb -D
 
 # Agora com todos os pacotes já instalados vamos fazer uma copia
 # das pastas para nosso workspace
@@ -20,7 +21,7 @@ COPY . .
 EXPOSE 3000
 
 # E por fim vamos rodar o aplicativo
-CMD ["npm", "run", "dev"]
+CMD ["yarn", "dev"]
 
 # Porque usamos o CMD aqui em cima ao inves de um RUN como das
 # outras vezes? A explicação é simples, o CMD sinaliza o ultimo
