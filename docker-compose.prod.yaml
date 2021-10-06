@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  app:
+    container_name: app-workshop-devops
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+    ports:
+      - 3000:3000
+    networks:
+      bridge-network:
+
+networks:
+  bridge-network:
+    driver: bridge

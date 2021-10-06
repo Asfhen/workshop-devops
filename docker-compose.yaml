@@ -1,0 +1,76 @@
+version: '3.8'
+
+services:
+  app:
+    container_name: app-workshop-devops
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    ports:
+      - 3000:3000
+    networks:
+      static-ip-network:
+        ipv4_address: 172.160.0.2
+  
+  jenkins:
+    container_name: jenkins-workshop-devops
+    image: jenkins/jenkins:lts
+    ports:
+      - 8083:8080
+      - 50003:50000
+    restart: "always"
+    privileged: true
+    user: root
+    volumes:
+      - ./.docker/data/jenkins_data:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      static-ip-network:
+        ipv4_address: 172.160.0.3
+
+  sonarqube:
+    container_name: sonarqube-workshop-devops
+    image: sonarqube:community
+    depends_on:
+      - sonarqube_db
+    restart: "always"
+    environment:
+      - sonar.jdbc.url=jdbc:postgresql://172.20.0.11/sonar
+      - sonar.jdbc.username=sonar
+      - sonar.jdbc.password=sonar
+    volumes:
+      - ./.docker/data/sonarqube_data:/opt/sonarqube/data
+      - ./.docker/data/sonarqube_extensions:/opt/sonarqube/extensions
+      - ./.docker/data/sonarqube_logs:/opt/sonarqube/logs
+    ports:
+      - 9000:9000
+    networks:
+      static-ip-network:
+        ipv4_address: 172.160.0.4
+      bridge-network:
+
+  sonarqube_db:
+    container_name: postgres-sonarqube
+    image: postgres:12
+    environment:
+      POSTGRES_USER: sonar
+      POSTGRES_PASSWORD: sonar
+      POSTGRES_DB: sonar
+    restart: "always"
+    volumes:
+      - ./.docker/data/sonarqube_db:/var/lib/postgresql/data
+    networks:
+      bridge-network:
+
+networks:
+  bridge-network:
+    driver: bridge
+  static-ip-network:
+    driver: bridge
+    ipam:
+     config:
+      - subnet: 172.160.0.0/16
+        gateway: 172.160.0.1
