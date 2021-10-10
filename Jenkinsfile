@@ -24,9 +24,15 @@ pipeline {
 
     stage('SonarQube') {
       steps {
-        echo 'Not implemented'
+        withSonarQubeEnv('SonnarScanner') {
+          sh '${scanner}/bin/sonar-scanner -X'
+        }
+
       }
     }
 
+  }
+  environment {
+    scanner = 'tool(\'SonnarScanner\')'
   }
 }
