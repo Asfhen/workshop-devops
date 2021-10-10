@@ -4,8 +4,8 @@ pipeline {
     stage('Build') {
       steps {
         nodejs('NodeNext') {
-          sh 'npm install --save'
           sh 'npm install -g react   swr   dotenv --save'
+          sh 'npm install --save'
           sh 'npm run build'
         }
 
