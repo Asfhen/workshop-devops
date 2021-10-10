@@ -4,10 +4,11 @@ pipeline {
     stage('Build') {
       steps {
         nodejs('NodeNext') {
+          sh 'npm install -g react   swr   dotenv --save'
           sh 'npm install --save'
-          sh 'npm install -g dotenv --save'
           sh 'npm run build'
         }
+
       }
     }
 
@@ -16,6 +17,7 @@ pipeline {
         nodejs('NodeNext') {
           sh 'npm run typecheck'
         }
+
       }
     }
 
