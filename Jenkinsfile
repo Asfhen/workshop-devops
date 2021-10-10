@@ -4,10 +4,10 @@ pipeline {
     stage('Build') {
       steps {
         nodejs('NodeNext') {
-          sh 'yarn add mongodb swr'
-          sh 'yarn add @types/mongodb -D'
-          sh 'yarn install'
-          sh 'yarn build'
+          sh 'npm install --save mongodb swr'
+          sh 'npm install @types/mongodb -D'
+          sh 'npm install'
+          sh 'npm run build'
         }
 
       }
