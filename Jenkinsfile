@@ -3,13 +3,19 @@ pipeline {
   stages {
     stage('Build') {
       steps {
-        echo 'Not implemented'
+        nodejs('NodeNext') {
+          sh 'npm install --save'
+          sh 'npm install -g dotenv --save'
+          sh 'npm run build'
+        }
       }
     }
 
     stage('Test') {
       steps {
-        echo 'Not implemented'
+        nodejs('NodeNext') {
+          sh 'npm run typecheck'
+        }
       }
     }
 
