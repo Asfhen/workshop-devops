@@ -1,5 +1,8 @@
 pipeline {
   agent any
+  environment {
+    scanner = tool('SonarScanner')
+  }
   stages {
     stage('Build') {
       steps {
@@ -31,8 +34,5 @@ pipeline {
       }
     }
 
-  }
-  environment {
-    scanner = tool('SonarScanner')
   }
 }
