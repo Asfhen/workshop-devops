@@ -33,6 +33,6 @@ pipeline {
 
   }
   environment {
-    scanner = tool('SonnarScanner')
+    scanner = tool('SonarScanner')
   }
 }
