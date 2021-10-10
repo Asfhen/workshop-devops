@@ -1,5 +1,10 @@
+# The docker-compose file must always start
+# with the version you are using for the file.
+# The version does not represent the docker-compose version.
 version: '3.8'
 
+# Here we start to define the services that
+# will be used by docker
 services:
   # app:
   #   container_name: app-workshop-devops
@@ -17,13 +22,13 @@ services:
   
   jenkins:
     container_name: jenkins-workshop-devops
-    image: jenkins/jenkins:lts
-    ports:
+    image: jenkins/jenkins:lts            # Here we are using the jenkins software, since it already exists in the docker registry,
+    ports:                                # so here we define the image we want to use, in this case we want the Jenkins LTS version.
       - 8083:8080
       - 50003:50000
-    restart: "always"
-    privileged: true
-    user: root
+    restart: "always"                     # Here we are simple saying to docker that we want this container to always be up.
+    privileged: true                      # Since jenkins requires admin privileges to run, we define that he has these privileges.
+    user: root                            # Here we define which user we are using for the privileges.
     volumes:
       - ./.docker/data/jenkins_data:/var/jenkins_home
       - /var/run/docker.sock:/var/run/docker.sock
@@ -34,11 +39,11 @@ services:
   sonarqube:
     container_name: sonarqube-workshop-devops
     image: sonarqube:community
-    depends_on:
-      - sonarqube_db
-    restart: "always"
-    environment:
-      - sonar.jdbc.url=jdbc:postgresql://172.20.0.11/sonar
+    depends_on:                           # We also can define that a service requires another service to run for exemple, 
+      - sonarqube_db                      # SonarQube requires a database connection so here we define that this service will
+    restart: "always"                     # only run with the database is also running.
+    environment:                          # If a service needs special enviroment variables we can define then here.
+      - sonar.jdbc.url=jdbc:postgresql://sonarqube_db/sonar
       - sonar.jdbc.username=sonar
       - sonar.jdbc.password=sonar
     volumes:
@@ -50,7 +55,8 @@ services:
     networks:
       static-ip-network:
         ipv4_address: 172.160.0.4
-      bridge-network:
+      bridge-network:                     # We can define multiple networks for a service so that services that doesn't need to
+                                          # have a connection with services they won't need, mainly used for security reasons.
 
   sonarqube_db:
     container_name: postgres-sonarqube
@@ -65,12 +71,13 @@ services:
     networks:
       bridge-network:
 
+# Finally but not least, we can define networks in here
 networks:
-  bridge-network:
-    driver: bridge
-  static-ip-network:
-    driver: bridge
-    ipam:
+  bridge-network:                         # Here we define a simple bridge network so that multiple services can communicate with each other
+    driver: bridge                        # this means that you don't need to use localhost:port to call other services you can simply use the service name.
+  static-ip-network:                      # Here we define a static network which is a little bit more complicated but holds the advantage
+    driver: bridge                        # of being able to always have the same ip to be used outside docker, for exemple all of the
+    ipam:                                 # services that are used in a browser will have it's own ip to be accessed
      config:
-      - subnet: 172.160.0.0/16
-        gateway: 172.160.0.1
+      - subnet: 172.160.0.0/16            # Here we define the range of the subnet to be used so any ip between 172.160.0.0 and 172.160.0.16 can be used
+        gateway: 172.160.0.1              # inside the docker-compose file.
