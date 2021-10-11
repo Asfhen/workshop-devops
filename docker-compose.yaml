@@ -6,29 +6,48 @@ version: '3.8'
 # Here we start to define the services that
 # will be used by docker
 services:
-  app:                                    # We start a service by defining the service name.
-    container_name: app-workshop-devops   # Then we can define the container namen, used by docker to identify the container.
-    build:                                # Since here we are defining the main app that we want to dockerize, we pass in the information to build.
-      context: .                          # Here we define the context, where docker-compose will look for the build file.
-      dockerfile: Dockerfile              # Here we put what is the name of the build file, in our case it's named Dockerfile
-    volumes:                              # We also can use volumes with docker, wich is a way to specify a dir to save data from a container
-      - .:/usr/src/app                    # into the host computer.
+  # We start a service by defining the service name.
+  app:       
+		# Then we can define the container namen, used by docker to identify the container.                            
+    container_name: app-workshop-devops 
+		# Since here we are defining the main app that we want to dockerize, we pass in the information to build.  
+    build:
+			# Here we define the context, where docker-compose will look for the build file.                              
+      context: .   
+			# Here we put what is the name of the build file, in our case it's named Dockerfile
+      dockerfile: Dockerfile
+    # We also can use volumes with docker, wich is a way to specify a dir to save data from a container
+    # into the host computer.
+    volumes:
+      - .:/usr/src/app
       - /usr/src/app/node_modules
-    ports:                                # Then we can expose a list of ports for our service to be used outside of the container.
-      - 3000:3000                         # We can expose more than one port per service, but it's not recommended since exposing unused ports it's a big security flaw.
-    networks:                             # Here we can choose to put our service in a internal network inside the docker.
-      static-ip-network:                  # This is the name of the network wich is defined in the end of the file.
-        ipv4_address: 172.160.0.2         # This service is using a network with static ipv4 so here we define inside the scope of our subnet an ipv4 for the service
+    # Then we can expose a list of ports for our service to be used outside of the container.
+    # We can expose more than one port per service, but it's not recommended since exposing 
+    # unused ports it's a big security flaw.
+    ports:
+      - 3000:3000
+    # Here we can choose to put our service in a internal network inside the docker.
+    networks:
+      # This is the name of the network wich is defined in the end of the file.
+      static-ip-network:
+        # This service is using a network with static ipv4 so here we define
+        # inside the scope of our subnet an ipv4 for the service
+        ipv4_address: 172.160.0.2
   
   jenkins:
     container_name: jenkins-workshop-devops
-    image: jenkins/jenkins:lts            # Here we are using the jenkins software, since it already exists in the docker registry,
-    ports:                                # so here we define the image we want to use, in this case we want the Jenkins LTS version.
+    # Here we are using the jenkins software, since it already exists in the docker registry,
+    # so here we define the image we want to use, in this case we want the Jenkins LTS version.
+    image: jenkins/jenkins:lts
+    ports:
       - 8083:8080
       - 50003:50000
-    restart: "always"                     # Here we are simple saying to docker that we want this container to always be up.
-    privileged: true                      # Since jenkins requires admin privileges to run, we define that he has these privileges.
-    user: root                            # Here we define which user we are using for the privileges.
+    # Here we are simple saying to docker that we want this container to always be up.
+    restart: "always"
+    # Since jenkins requires admin privileges to run, we define that he has these privileges.
+    privileged: true
+    # Here we define which user we are using for the privileges.
+    user: root
     volumes:
       - ./.docker/data/jenkins_data:/var/jenkins_home
       - /var/run/docker.sock:/var/run/docker.sock
@@ -39,10 +58,14 @@ services:
   sonarqube:
     container_name: sonarqube-workshop-devops
     image: sonarqube:community
-    depends_on:                           # We also can define that a service requires another service to run for exemple, 
-      - sonarqube_db                      # SonarQube requires a database connection so here we define that this service will
-    restart: "always"                     # only run with the database is also running.
-    environment:                          # If a service needs special enviroment variables we can define then here.
+    # We also can define that a service requires another service to run for exemple, 
+    # SonarQube requires a database connection so here we define that this service will
+    # only run with the database is also running.
+    depends_on:
+      - sonarqube_db
+    restart: "always"
+    # If a service needs special enviroment variables we can define then here.
+    environment:
       - sonar.jdbc.url=jdbc:postgresql://sonarqube_db/sonar
       - sonar.jdbc.username=sonar
       - sonar.jdbc.password=sonar
@@ -53,10 +76,11 @@ services:
     ports:
       - 9000:9000
     networks:
+      # We can define multiple networks for a service so that services that doesn't need to
+      # have a connection with services they won't need, mainly used for security reasons.
       static-ip-network:
         ipv4_address: 172.160.0.4
-      bridge-network:                     # We can define multiple networks for a service so that services that doesn't need to
-                                          # have a connection with services they won't need, mainly used for security reasons.
+      bridge-network:
 
   sonarqube_db:
     container_name: postgres-sonarqube
@@ -73,11 +97,18 @@ services:
 
 # Finally but not least, we can define networks in here
 networks:
-  bridge-network:                         # Here we define a simple bridge network so that multiple services can communicate with each other
-    driver: bridge                        # this means that you don't need to use localhost:port to call other services you can simply use the service name.
-  static-ip-network:                      # Here we define a static network which is a little bit more complicated but holds the advantage
-    driver: bridge                        # of being able to always have the same ip to be used outside docker, for exemple all of the
-    ipam:                                 # services that are used in a browser will have it's own ip to be accessed
+  # Here we define a simple bridge network so that multiple services can communicate with each other
+  # this means that you don't need to use localhost:port to call other services you can simply use the service name.
+  bridge-network:
+    driver: bridge
+  # Here we define a static network which is a little bit more complicated but holds the advantage
+  # of being able to always have the same ip to be used outside docker, for exemple all of the
+  # services that are used in a browser will have it's own ip to be accessed
+  static-ip-network:
+    driver: bridge
+    ipam:
      config:
-      - subnet: 172.160.0.0/16            # Here we define the range of the subnet to be used so any ip between 172.160.0.0 and 172.160.0.16 can be used
-        gateway: 172.160.0.1              # inside the docker-compose file.
+      # Here we define the range of the subnet to be used so any ip between 172.160.0.0 and 172.160.0.16 can be used
+      # inside the docker-compose file.
+      - subnet: 172.160.0.0/16
+        gateway: 172.160.0.1
