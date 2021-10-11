@@ -1,4 +1,4 @@
-[![Next.js](https://assets.vercel.com/image/upload/v1538361091/repositories/next-js/next-js.png)](https://nextjs.org)
+<!-- [![Next.js](https://assets.vercel.com/image/upload/v1538361091/repositories/next-js/next-js.png)](https://nextjs.org)
 
 <p align="center">
   <a href="#-projeto">Projeto</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
@@ -48,4 +48,4 @@ Fique a vontade <3
 
 <p align="center">Desenvolvido com 💜 por Thiago Marinho | AX @ Rocketseat</p>
 
-
+ -->
