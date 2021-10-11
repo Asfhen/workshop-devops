@@ -30,7 +30,6 @@ pipeline {
         withSonarQubeEnv('SonarScanner') {
           sh '${scanner}/bin/sonar-scanner -X'
         }
-
       }
     }
 

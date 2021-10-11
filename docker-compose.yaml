@@ -6,19 +6,19 @@ version: '3.8'
 # Here we start to define the services that
 # will be used by docker
 services:
-  # app:
-  #   container_name: app-workshop-devops
-  #   build:
-  #     context: .
-  #     dockerfile: Dockerfile
-  #   volumes:
-  #     - .:/usr/src/app
-  #     - /usr/src/app/node_modules
-  #   ports:
-  #     - 3000:3000
-  #   networks:
-  #     static-ip-network:
-  #       ipv4_address: 172.160.0.2
+  app:
+    container_name: app-workshop-devops
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    ports:
+      - 3000:3000
+    networks:
+      static-ip-network:
+        ipv4_address: 172.160.0.2
   
   jenkins:
     container_name: jenkins-workshop-devops
